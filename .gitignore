@@ -1,0 +1,54 @@
+# =========================
+# Keil MDK / uVision
+# =========================
+
+# Build output directories
+/Objects/
+/Listings/
+/Debug/
+/Release/
+/RTE/
+
+# Generated output files
+*.axf
+*.bin
+*.crf
+*.d
+*.dep
+*.elf
+*.hex
+*.htm
+*.iex
+*.lnp
+*.map
+*.o
+*.obj
+*.out
+*.sct
+*.tra
+
+# User-specific Keil files
+*.uvguix.*
+*.uvoptx
+*.scvd
+*.dbgconf
+
+# Temporary / backup files
+*.bak
+*.tmp
+
+# Keep the main project file
+!*.uvprojx
+
+
+# =========================
+# ARM / compiler artifacts
+# =========================
+*.lst
+*.lib
+
+
+# =========================
+# VS Code
+# =========================
+#.vscode/

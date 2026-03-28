@@ -1,0 +1,22 @@
+{
+  "version": 4,
+  "configurations": [
+    {
+      "name": "TM4C123",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "C:/Users/Joao/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123",
+        "C:/Users/Joao/AppData/Local/Arm/Packs/ARM/CMSIS/6.3.0/CMSIS/Core/Include"
+      ],
+      "defines": [
+        "TM4C123GH6PM"
+      ],
+      "compilerPath": "C:/Users/Joao/AppData/Local/Keil_v5/ARM/ARMCLANG/Bin/armclang.exe",
+      "compilerArgs": [
+        "--target=arm-arm-none-eabi"
+      ],
+      "intelliSenseMode": "windows-clang-arm",
+      "cStandard": "c11"
+    }
+  ]
+}
