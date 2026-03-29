@@ -2,13 +2,13 @@
 #include "inputHandler.h"
 #include "waveforms.h"
 
-#define GPIOB_PULSE_PIN 0x01
-#define GPIOB_BUTTON_PIN 0x02
+#define GPIOB_BUTTON_PIN 0x01
+#define GPIOB_PULSE_PIN 0x04
 
 int main()
 {
-    GPIOB_init(0, OUTPUT);
-    GPIOB_init(1, INPUT);
+    GPIOB_init(0, INPUT);
+    GPIOB_init(2, OUTPUT);
 
     while (1)
     {

@@ -7,7 +7,7 @@
       "command": "C:\\Users\\Joao\\AppData\\Local\\Keil_v5\\UV4\\UV4.exe",
       "args": [
         "-b",
-        "C:\\Users\\Joao\\Desktop\\distance\\code\\sonar.uvprojx",
+        "C:\\Users\\Joao\\Desktop\\distance\\tm4c123-sonar\\sonar.uvprojx",
         "-o",
         "${workspaceFolder}\\build.log"
       ],
