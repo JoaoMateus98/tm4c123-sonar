@@ -8,7 +8,7 @@
  * Parameters:
  * - port: GPIO port to write to
  * - pin_mask: bit mask for the selected pin
- * - width: pulse width in milliseconds
+ * - width: pulse width in microseconds
  *
  * How it works:
  * - Drives the selected pin high
@@ -18,6 +18,6 @@
 void squarePulse(GPIOA_Type *port, uint32_t pin_mask, uint32_t width)
 {
     port->DATA |= pin_mask;         // Start pulse
-    timer0A_delay(width, DELAY_MS); // Hold pin high
+    timer0A_delay(width, DELAY_US); // Hold pin high
     port->DATA &= ~pin_mask;        // End pulse
 }

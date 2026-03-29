@@ -8,5 +8,7 @@
 #define DELAY_US 1
 
 void timer0A_delay(uint32_t delay, uint8_t timeUnit);
+void Timer1A_Init(void);
+uint32_t Timer1A_GetPulseWidth(void);
 
 #endif

@@ -42,40 +42,87 @@ void timer0A_delay(uint32_t delay, uint8_t timeUnit)
     }
 }
 
-uint32_t inputEdgeTimer1A()
+/*
+ * Timer1A_Init()
+ *
+ * Configures Timer1A for 16-bit input edge-time capture mode.
+ * The timer is set to:
+ * - capture mode
+ * - edge-time mode
+ * - up-counting
+ * - initially capture rising edges
+ */
+void Timer1A_Init(void)
 {
-    uint32_t risingEdge, fallingEdge;
+    volatile uint32_t delay;
 
-    SYSCTL->RCGCTIMER |= 0x02; // enable Timer1 clock
-    TIMER1->CTL = 0;           // disable Timer1A
-    TIMER1->CFG = 0x04;        // 16-bit mode
-    TIMER1->TAMR = 0x17;       // capture, edge-time, count-up
-    TIMER1->CTL &= ~0x0C;      // clear TAEVENT bits -> 00 = positive edge
-    TIMER1->TAILR = 0xFFFE;    // avoid 0xFFFF errata in count-up edge-time mode
-    TIMER1->TAPR = 0xFF;       // extend range with prescaler
-    TIMER1->CTL |= 0x01;       // Start Timer1A
-    while ((TIMER1->RIS & 0x04) == 0)
-    {
-        // wait for event
-    }
-    TIMER1->ICR = 0x01; // Clear timeout flag for next interval
+    SYSCTL->RCGCTIMER |= 0x02; // enable clock for Timer1
+    delay = SYSCTL->RCGCTIMER; // allow clock time to start
+
+    TIMER1->CTL &= ~0x01;   // disable Timer1A during setup
+    TIMER1->CFG = 0x04;     // 16-bit configuration
+    TIMER1->TAMR = 0x17;    // capture mode, edge-time, up-count
+    TIMER1->CTL &= ~0x0C;   // TAEVENT = 00 -> rising edge
+    TIMER1->TAILR = 0xFFFE; // avoid 0xFFFF errata
+    TIMER1->TAPR = 0xFF;    // prescaler extension
+    TIMER1->ICR = 0x04;     // clear capture flag
+    TIMER1->CTL |= 0x01;    // enable Timer1A
 }
 
 /*
-3. In the GPTM Timer Mode (GPTMTnMR) register, write the TnCMR field to 0x1 and the TnMR
-field to 0x3 and select a count direction by programming the TnCDIR bit.
-4. Configure the type of event that the timer captures by writing the TnEVENT field of the GPTM
-Control (GPTMCTL) register.
-5. If a prescaler is to be used, write the prescale value to the GPTM Timer n Prescale Register
-(GPTMTnPR).
-6. Load the timer start value into the GPTM Timer n Interval Load (GPTMTnILR) register.
-7. If interrupts are required, set the CnEIM bit in the GPTM Interrupt Mask (GPTMIMR) register.
-8. Set the TnEN bit in the GPTM Control (GPTMCTL) register to enable the timer and start counting.
-9. Poll the CnERIS bit in the GPTMRIS register or wait for the interrupt to be generated (if
-enabled). In both cases, the status flags are cleared by writing a 1 to the CnECINT bit of the GPTM
-Interrupt Clear (GPTMICR) register. The time at which the event happened can be obtained
-by reading the GPTM Timer n (GPTMTnR) register.
-In Input Edge Timing mode, the timer continues running after an edge event has been detected,
-but the timer interval can be changed at any time by writing the GPTMTnILR register and clearing
-the TnILD bit in the GPTMTnMR register. The change takes effect at the next cycle after the write
-*/
+ * Timer1A_GetPulseWidth()
+ *
+ * Measures one pulse width by capturing:
+ * - rising edge timestamp
+ * - falling edge timestamp
+ *
+ * Since the timer counts up, pulse width = fallingEdge - risingEdge.
+ *
+ * Returns:
+ *   pulse width in timer ticks
+ */
+uint32_t Timer1A_GetPulseWidth(void)
+{
+    uint32_t risingEdge, fallingEdge;
+    uint32_t timeout;
+
+    TIMER1->ICR = 0x04;
+
+    TIMER1->CTL &= ~0x01;
+    TIMER1->CTL &= ~0x0C; // rising edge
+    TIMER1->CTL |= 0x01;
+
+    timeout = 1000000;
+    while (((TIMER1->RIS & 0x04) == 0) && timeout)
+    {
+        timeout--;
+    }
+    if (timeout == 0)
+    {
+        return 0;
+    }
+
+    risingEdge = TIMER1->TAR;
+    TIMER1->ICR = 0x04;
+
+    TIMER1->CTL &= ~0x01;
+    TIMER1->CTL &= ~0x0C;
+    TIMER1->CTL |= 0x04; // falling edge
+    TIMER1->ICR = 0x04;
+    TIMER1->CTL |= 0x01;
+
+    timeout = 1000000;
+    while (((TIMER1->RIS & 0x04) == 0) && timeout)
+    {
+        timeout--;
+    }
+    if (timeout == 0)
+    {
+        return 0;
+    }
+
+    fallingEdge = TIMER1->TAR;
+    TIMER1->ICR = 0x04;
+
+    return (fallingEdge - risingEdge);
+}

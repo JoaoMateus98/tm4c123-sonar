@@ -46,6 +46,36 @@ void GPIOB_init(uint8_t pin_index, uint8_t direction)
 }
 
 /*
+ * Timer1A_CapturePin_Init()
+ *
+ * Configures PB4 as the Timer1A capture input pin.
+ *
+ * PB4 function:
+ *   T1CCP0
+ *
+ * Pin setup:
+ * - digital enabled
+ * - alternate function enabled
+ * - port control set to Timer function
+ * - analog disabled
+ */
+void Timer1A_CapturePin_Init(void)
+{
+    volatile uint32_t delay;
+
+    SYSCTL->RCGCGPIO |= 0x02; // enable clock for Port B
+    delay = SYSCTL->RCGCGPIO; // allow clock to stabilize
+
+    GPIOB->DIR &= ~0x10;   // PB4 input
+    GPIOB->DEN |= 0x10;    // enable digital on PB4
+    GPIOB->AFSEL |= 0x10;  // enable alternate function on PB4
+    GPIOB->AMSEL &= ~0x10; // disable analog on PB4
+
+    GPIOB->PCTL &= ~0x000F0000; // clear PCTL for PB4
+    GPIOB->PCTL |= 0x00070000;  // PB4 = T1CCP0
+}
+
+/*
  * SW2_init()
  *
  * Configures PF0 as a digital input for the onboard switch.

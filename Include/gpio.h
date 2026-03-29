@@ -10,5 +10,6 @@
 
 void GPIOB_init(uint8_t pin_index, uint8_t direction);
 void SW2_init(void);
+void Timer1A_CapturePin_Init(void);
 
 #endif
